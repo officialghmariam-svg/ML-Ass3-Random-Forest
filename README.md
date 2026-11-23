@@ -1,8 +1,7 @@
-# Random Forest & Softmax Regression (Multi-class Classification)
+# Random Forest (Multi-class Classification)
 
-Predicting the **price range of a mobile phone** (4 classes) using a **Random Forest** and **Softmax Regression**
-trained with five optimizers. The softmax model, the optimizers and the metrics are implemented **from scratch with NumPy**;
-the Random Forest uses scikit-learn.
+Predicting the **price range of a mobile phone** (4 classes) using a **Random Forest**.
+The validation set is used to choose the number of trees and the max depth, and the metrics are implemented with NumPy.
 
 ## Dataset
 [Mobile Price Classification](https://www.kaggle.com/datasets/iabhishekofficial/mobile-price-classification) from Kaggle (`train.csv`).
@@ -19,40 +18,39 @@ the Random Forest uses scikit-learn.
 ├── data/
 │   └── train.csv
 ├── notebooks/
-│   ├── 0_random_forest.ipynb
-│   ├── 1_softmax_gradient_descent.ipynb
-│   ├── 2_softmax_sgd.ipynb
-│   ├── 3_softmax_mini_batch_gd.ipynb
-│   ├── 4_softmax_rmsprop.ipynb
-│   └── 5_softmax_adam.ipynb
+│   └── random_forest.ipynb
 ├── images/
-│   └── loss_comparison.png
+│   ├── confusion_matrix.png
+│   └── feature_importance.png
 ├── requirements.txt
 └── README.md
 ```
 
 ## Method
 1. **Split:** 60% train (1200), 20% validation (400), 20% test (400)
-2. **Random Forest:** the validation set is used to choose the number of trees and the max depth
-3. **Softmax Regression:** standardization (fit on train only) → bias column → one-hot labels → cross-entropy loss, trained with Batch GD, SGD, Mini-Batch GD, RMSProp and Adam. Train and validation loss are tracked every epoch
-4. **Metrics (test set):** Accuracy, macro Precision, Recall and F1, confusion matrix
+2. **Tuning:** 12 combinations tried (trees: 10, 50, 100 × max depth: 2, 3, 5, None), best one chosen by validation accuracy
+3. **Evaluation (test set):** Accuracy, macro Precision, Recall and F1, confusion matrix
 
 ## Results
+Best settings: **100 trees, max_depth = None**
 
-| Model | Validation Acc. | Test Acc. | Precision | Recall | F1 |
-|---|---|---|---|---|---|
-| Random Forest | 0.865 | 0.865 | 0.867 | 0.868 | 0.867 |
-| Softmax + Batch GD | 0.953 | 0.970 | 0.970 | 0.971 | 0.970 |
-| Softmax + SGD | 0.943 | 0.968 | 0.967 | 0.968 | 0.968 |
-| Softmax + Mini-Batch GD | 0.943 | 0.970 | 0.970 | 0.971 | 0.970 |
-| Softmax + RMSProp | 0.945 | 0.970 | 0.970 | 0.971 | 0.970 |
-| Softmax + Adam | 0.943 | 0.970 | 0.970 | 0.971 | 0.970 |
+| Set | Accuracy |
+|---|---|
+| Train | 1.000 |
+| Validation | 0.865 |
+| Test | 0.865 |
 
-![Train and validation loss of the five optimizers](images/loss_comparison.png)
+| Test Precision | Test Recall | Test F1 |
+|---|---|---|
+| 0.867 | 0.868 | 0.867 |
 
-- All five optimizers reach about 97% test accuracy, and the validation loss follows the train loss (no overfitting).
-- Softmax regression beats the Random Forest on this dataset, because the price range depends almost linearly on the features (mainly **RAM**).
-- The Random Forest reaches 100% train accuracy but 86.5% on validation, so it overfits a little.
+![Confusion matrix](images/confusion_matrix.png)
+
+![Feature importance](images/feature_importance.png)
+
+- Most mistakes are between neighbouring price ranges (e.g. medium vs high); low and very high are never confused.
+- **RAM** is by far the most important feature.
+- Train accuracy is 100% but validation is 86.5%, so the forest overfits a little.
 
 ## How to run
 ```bash
